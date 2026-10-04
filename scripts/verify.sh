@@ -6,25 +6,32 @@ pass() { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 fail() { printf '  \033[31m✗\033[0m %s\n' "$1"; }
 
 echo "== OpenResty =="
-nginx -t 2>/dev/null && pass "nginx -t" || fail "nginx -t"
+if nginx -t 2>/dev/null; then pass "nginx -t"; else fail "nginx -t"; fi
 nginx -v 2>&1 | sed 's/^/  /'
 rc-service openresty status 2>&1 | sed 's/^/  /' || true
-grep -i '\[Crowdsec\] Initialisation done' /var/log/nginx/error.log >/dev/null 2>&1 \
-  && pass "bouncer initialised" || fail "bouncer init line not found in error.log"
+if grep -i '\[Crowdsec\] Initialisation done' /var/log/nginx/error.log >/dev/null 2>&1; then
+  pass "bouncer initialised"
+else
+  fail "bouncer init line not found in error.log"
+fi
 
 echo "== Ports =="
 netstat -ltn 2>/dev/null | grep -E ':80 |:443 |:8080 |:7422 ' | sed 's/^/  /' || true
 
 echo "== Docker / Engine =="
 docker ps --format '  {{.Names}}  {{.Status}}  {{.Ports}}'
-curl -fsS -o /dev/null http://127.0.0.1:8080/health && pass "LAPI /health" || fail "LAPI /health"
+if curl -fsS -o /dev/null http://127.0.0.1:8080/health 2>/dev/null; then
+  pass "LAPI /health"
+else
+  fail "LAPI /health"
+fi
 docker exec crowdsec cscli bouncers list 2>/dev/null | sed 's/^/  /' || true
 
 echo "== HTTP =="
 printf '  GET /          -> '; curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/
 printf '  GET / (https)  -> '; curl -sk -o /dev/null -w '%{http_code}\n' https://127.0.0.1/
 
-if [ -n "${APPSEC_URL:-x}" ]; then
+if [ -n "${APPSEC_URL:-}" ]; then
   echo "== WAF =="
   printf '  GET /.env (vpatch -> ban)     -> '; curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/.env
   printf '  GET generic SSTI (-> captcha) -> '; \

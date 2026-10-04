@@ -25,7 +25,7 @@ if ! grep -q '7422:7422' "$DEST/docker-compose.yml"; then
 fi
 
 echo "==> Applying and restarting the engine"
-cd "$DEST"
+cd "$DEST" || exit 1
 docker compose up -d
 sleep 12
 

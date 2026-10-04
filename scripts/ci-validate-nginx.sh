@@ -11,7 +11,7 @@ REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 echo "==> Installing nginx + lua module"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq nginx libnginx-mod-http-lua ca-certificates >/dev/null
+apt-get install -y -qq nginx libnginx-mod-http-lua libnginx-mod-http-ndk ca-certificates >/dev/null
 apt-get install -y -qq lua-resty-core lua-cjson >/dev/null 2>&1 || true
 
 echo "==> Creating the nginx user"
@@ -38,8 +38,12 @@ openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
   -keyout /etc/nginx/ssl/selfsigned.key -out /etc/nginx/ssl/selfsigned.crt \
   -subj '/CN=ci' >/dev/null 2>&1
 
-# The distro-specific dynamic-module loader is skipped; load only the lua module.
-echo 'load_module /usr/lib/nginx/modules/ngx_http_lua_module.so;' > /etc/nginx/modules/00-lua.conf
+# The distro-specific dynamic-module loader is skipped; load ndk first, then lua
+# (ngx_http_lua_module links against ngx_http_ndk_module).
+{
+  echo 'load_module /usr/lib/nginx/modules/ndk_http_module.so;'
+  echo 'load_module /usr/lib/nginx/modules/ngx_http_lua_module.so;'
+} > /etc/nginx/modules/00-modules.conf
 
 echo "==> Deploying configs"
 cp "$REPO_ROOT/configs/openresty/nginx.conf"            /etc/nginx/nginx.conf

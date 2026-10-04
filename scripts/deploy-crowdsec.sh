@@ -29,7 +29,7 @@ else
 fi
 
 echo "==> Starting the engine"
-cd "$DEST"
+cd "$DEST" || exit 1
 docker compose up -d
 
 echo "==> Waiting for the Local API (up to ~60s)"
