@@ -1,0 +1,26 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      # Collections to install on first boot (idempotent afterwards).
+      COLLECTIONS: "crowdsecurity/nginx"
+      # Pre-register the host nginx bouncer so it can talk to the Local API.
+      BOUNCER_KEY_nginx_web: "${CROWDSEC_NGINX_BOUNCER_KEY}"
+      TZ: "Asia/Shanghai"
+    ports:
+      # Local API, bound to loopback only (the host nginx bouncer uses it).
+      - "127.0.0.1:8080:8080"
+      # AppSec (WAF) endpoint, loopback only (queried by the host bouncer).
+      - "127.0.0.1:7422:7422"
+    volumes:
+      - crowdsec-config:/etc/crowdsec
+      - crowdsec-db:/var/lib/crowdsec/data
+      # Host nginx logs, read-only.
+      - /var/log/nginx:/var/log/nginx:ro
+      - ./acquis.d:/etc/crowdsec/acquis.d:ro
+
+volumes:
+  crowdsec-config:
+  crowdsec-db:

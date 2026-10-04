@@ -1,0 +1,11 @@
+# CrowdSec / Nginx secrets and local deployment copies
+.env
+*.local
+configs/bouncers/crowdsec-nginx-bouncer.conf
+configs/docker/.env
+
+# Backups / dumps
+*.bak
+*.tgz
+*.tar.gz
+backups/

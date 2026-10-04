@@ -1,0 +1,37 @@
+ENABLED=true
+API_URL=http://127.0.0.1:8080
+# Generate with:  docker exec crowdsec cscli bouncers add nginx_web -o raw
+API_KEY=<BOUNCER_API_KEY>
+USE_TLS_AUTH=false
+TLS_CLIENT_CERT=
+TLS_CLIENT_KEY=
+CACHE_EXPIRATION=1
+BOUNCING_ON_TYPE=all
+FALLBACK_REMEDIATION=ban
+REQUEST_TIMEOUT=3000
+UPDATE_FREQUENCY=10
+ENABLE_INTERNAL=false
+# live = query LAPI on every request; stream = local cache + periodic sync
+MODE=live
+SCENARIOS_CONTAINING=
+SCENARIOS_NOT_CONTAINING=
+EXCLUDE_LOCATION=
+BAN_TEMPLATE_PATH=/var/lib/crowdsec/lua/templates/ban.html
+REDIRECT_LOCATION=
+RET_CODE=
+# --- CAPTCHA (only used for `captcha` decisions) ---
+# Providers: recaptcha | hcaptcha | turnstile  (turnstile recommended outside the US/EU)
+CAPTCHA_PROVIDER=turnstile
+SECRET_KEY=<TURNSTILE_SECRET_KEY>
+SITE_KEY=<TURNSTILE_SITE_KEY>
+CAPTCHA_TEMPLATE_PATH=/var/lib/crowdsec/lua/templates/captcha.html
+CAPTCHA_EXPIRATION=3600
+# --- AppSec / WAF ---
+APPSEC_URL=http://127.0.0.1:7422
+APPSEC_FAILURE_ACTION=passthrough
+APPSEC_CONNECT_TIMEOUT=
+APPSEC_SEND_TIMEOUT=
+APPSEC_PROCESS_TIMEOUT=
+ALWAYS_SEND_TO_APPSEC=false
+APPSEC_DROP_UNREADABLE_BODY=false
+SSL_VERIFY=true
