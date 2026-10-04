@@ -156,6 +156,10 @@ sudo sh scripts/verify.sh
 
 ---
 
+## 贡献
+
+见 [CONTRIBUTING.md](CONTRIBUTING.md)。提交 PR 前请先运行 `make lint`。
+
 ## 许可证
 
 [MIT](LICENSE) © 2026 chenxianlong

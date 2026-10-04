@@ -166,6 +166,10 @@ sudo sh scripts/verify.sh
 
 ---
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Please run `make lint` before opening a PR.
+
 ## License
 
 [MIT](LICENSE) © 2026 chenxianlong

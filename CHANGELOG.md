@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-04 — documentation & tooling
+
+- Add `CONTRIBUTING.md`
+- Add CI (`lint.yml`): shellcheck, yamllint, docker compose config, nginx -t
+- Add `.yamllint` and `scripts/ci-validate-nginx.sh`
+- Add `Makefile` one-command deployment entry point
+- Add `README.zh-CN.md` (Chinese README)
+
 ## 2026-10-04 — initial release
 
 Built and verified end-to-end on Alpine Linux 3.24:
