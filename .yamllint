@@ -1,0 +1,18 @@
+---
+extends: default
+
+rules:
+  # Long explanatory lines are fine in these configs
+  line-length: disable
+  document-start: disable
+  # "on"/"true" as plain keys is intentional in some files
+  truthy:
+    check-keys: false
+  comments-indentation: disable
+  # allow both `{a: 1}` and `{ a: 1 }`
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1

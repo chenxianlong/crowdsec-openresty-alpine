@@ -1,5 +1,10 @@
 # crowdsec-openresty-alpine
 
+[![lint](https://github.com/chenxianlong/crowdsec-openresty-alpine/actions/workflows/lint.yml/badge.svg)](https://github.com/chenxianlong/crowdsec-openresty-alpine/actions/workflows/lint.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![README: EN](https://img.shields.io/badge/README-EN-blue)](README.md)
+[![语言: 中文](https://img.shields.io/badge/README-%E4%B8%AD%E6%96%87-red)](README.zh-CN.md)
+
 > **CrowdSec IDS/IPS + WAF on Alpine Linux with OpenResty, running in Docker** — a complete, reproducible deployment recipe for a small server: Nginx reverse proxy, IP blocking driven by CrowdSec, the AppSec (WAF) component, CAPTCHA challenges, and a **hybrid remediation** strategy (hard-block known CVEs, challenge the rest).
 
 This repository is the distilled, working result of building that stack end-to-end on Alpine Linux. Every file in [`configs/`](configs) is a real, tested configuration. Every gotcha we hit is documented in [`docs/`](docs).
@@ -65,26 +70,31 @@ This repository is the distilled, working result of building that stack end-to-e
 > Full, copy-paste steps are in [`docs/02-installation.md`](docs/02-installation.md). Below is the gist.
 
 ```bash
-# 0. Clone
 git clone https://github.com/chenxianlong/crowdsec-openresty-alpine.git
 cd crowdsec-openresty-alpine
 
-# 1. Docker + China-friendly registry mirror
+# One command for everything (Docker → engine → bouncer → WAF → captcha → verify)
+sudo make all
+
+# Or step by step
+sudo make docker engine bouncer waf captcha verify
+```
+
+Variables are passed through to the scripts:
+
+```bash
+SERVER_NAME=app.example.com make bouncer
+CAPTCHA_PROVIDER=turnstile SITE_KEY=xxx SECRET_KEY=yyy make captcha
+```
+
+Prefer plain scripts? They work standalone:
+
+```bash
 sudo sh scripts/install-docker.sh
-
-# 2. CrowdSec engine (Docker) + collections
 sudo sh scripts/deploy-crowdsec.sh
-
-# 3. OpenResty + the Lua bouncer (native)
 sudo sh scripts/install-bouncer.sh
-
-# 4. AppSec / WAF with the hybrid strategy
 sudo sh scripts/enable-waf.sh
-
-# 5. CAPTCHA (Turnstile) — put your real keys in the bouncer config afterwards
 sudo sh scripts/enable-captcha.sh
-
-# 6. Verify
 sudo sh scripts/verify.sh
 ```
 
@@ -94,8 +104,10 @@ sudo sh scripts/verify.sh
 
 ```
 .
-├── README.md
+├── README.md  README.zh-CN.md
 ├── LICENSE
+├── Makefile                     # one-command deploy
+├── .github/workflows/lint.yml   # CI: shellcheck / yamllint / compose / nginx -t
 ├── docs/
 │   ├── 01-architecture.md        # components & data flow
 │   ├── 02-installation.md        # step-by-step deploy

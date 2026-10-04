@@ -1,0 +1,46 @@
+name: lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: shellcheck (scripts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run shellcheck
+        run: shellcheck --version && shellcheck scripts/*.sh
+
+  yamllint:
+    name: yamllint (configs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run yamllint
+        run: |
+          python3 -m pip install --user --quiet yamllint
+          yamllint -c .yamllint configs
+
+  compose:
+    name: docker compose config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file
+        env:
+          CROWDSEC_NGINX_BOUNCER_KEY: ci_dummy_key
+        run: docker compose -f configs/docker/docker-compose.yml config --quiet
+
+  nginx:
+    name: nginx/OpenResty configs (-t)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate nginx configs
+        run: sudo bash scripts/ci-validate-nginx.sh
